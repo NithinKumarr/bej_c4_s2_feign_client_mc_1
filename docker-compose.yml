@@ -1,0 +1,53 @@
+version: "3.9"
+services:
+  mongodbservice:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    container_name: mongo-track-container
+    networks:
+      - track-net
+  mysql-user-service:
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    container_name: auth-app-container
+    networks:
+      - user-net
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USERNAME: rishita
+      MYSQL_PASSWORD: rishu
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+
+  track-service:
+    container_name: track-service
+    build: Track/
+    networks:
+      - track-net
+    ports:
+      - "65103:65103"
+    depends_on:
+      - mongodbservice
+    restart: always
+
+  user-auth-service:
+    container_name: user-auth-service
+    build: User/
+    networks:
+      - user-net
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mysql-user-service
+    restart: always
+networks:
+  track-net:
+    driver: bridge
+
+
+
+
+
+
+
